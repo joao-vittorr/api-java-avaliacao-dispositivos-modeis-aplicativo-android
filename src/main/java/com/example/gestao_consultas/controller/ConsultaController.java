@@ -44,6 +44,7 @@ public class ConsultaController {
                 Notificacao notificacao = new Notificacao();
                 notificacao.setMensagem("Nova consulta marcada com " + consulta.getMedico() + " em " + consulta.getDataHora());
                 notificacao.setDataHoraEnvio(LocalDateTime.now());
+                notificacao.setConsulta(consulta); // Associa a consulta à notificação
                 notificacaoRepository.save(notificacao);
 
                 return ResponseEntity.ok("Consulta criada com sucesso");
@@ -54,4 +55,5 @@ public class ConsultaController {
             return ResponseEntity.badRequest().body("Paciente não fornecido.");
         }
     }
+
 }
