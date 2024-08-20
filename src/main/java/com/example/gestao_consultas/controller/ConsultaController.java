@@ -22,10 +22,10 @@ public class ConsultaController {
     private ConsultaRepository consultaRepository;
 
     @Autowired
-    private NotificacaoRepository notificacaoRepository;
+    private PessoaRepository pessoaRepository;
 
     @Autowired
-    private PessoaRepository pessoaRepository;
+    private NotificacaoRepository notificacaoRepository;
 
     @GetMapping
     public List<Consulta> getAllConsultas() {
@@ -40,40 +40,18 @@ public class ConsultaController {
                 consulta.setPaciente(pacienteOpt.get());
                 consultaRepository.save(consulta);
 
-                // Adiciona notificação após criação
+                // Criar notificação
                 Notificacao notificacao = new Notificacao();
-                notificacao.setMensagem("Nova consulta agendada: " + consulta.getDescricao());
+                notificacao.setMensagem("Nova consulta marcada com " + consulta.getMedico() + " em " + consulta.getDataHora());
                 notificacao.setDataHoraEnvio(LocalDateTime.now());
                 notificacaoRepository.save(notificacao);
 
-                return ResponseEntity.ok("Consulta criada com sucesso e notificação enviada");
+                return ResponseEntity.ok("Consulta criada com sucesso");
             } else {
                 return ResponseEntity.badRequest().body("Paciente não encontrado.");
             }
         } else {
             return ResponseEntity.badRequest().body("Paciente não fornecido.");
-        }
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateConsulta(@PathVariable Long id, @RequestBody Consulta consultaDetails) {
-        Optional<Consulta> consultaOpt = consultaRepository.findById(id);
-        if (consultaOpt.isPresent()) {
-            Consulta consulta = consultaOpt.get();
-            consulta.setDescricao(consultaDetails.getDescricao());
-            consulta.setMedico(consultaDetails.getMedico());
-            consulta.setDataHora(consultaDetails.getDataHora());
-            consultaRepository.save(consulta);
-
-            // Adiciona notificação após atualização
-            Notificacao notificacao = new Notificacao();
-            notificacao.setMensagem("Consulta atualizada: " + consulta.getDescricao());
-            notificacao.setDataHoraEnvio(LocalDateTime.now());
-            notificacaoRepository.save(notificacao);
-
-            return ResponseEntity.ok("Consulta atualizada com sucesso e notificação enviada");
-        } else {
-            return ResponseEntity.badRequest().body("Consulta não encontrada.");
         }
     }
 }
