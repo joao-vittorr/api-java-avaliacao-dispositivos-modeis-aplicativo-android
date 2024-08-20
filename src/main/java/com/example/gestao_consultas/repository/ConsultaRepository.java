@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 
+    // Consulta consultas dentro de um intervalo de datas
     List<Consulta> findByDataHoraBetween(LocalDateTime inicio, LocalDateTime fim);
 }
