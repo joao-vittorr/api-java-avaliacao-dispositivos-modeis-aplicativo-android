@@ -20,18 +20,23 @@ public class ConsultaScheduler {
     @Autowired
     private NotificacaoRepository notificacaoRepository;
 
-    @Scheduled(fixedRate = 3600000) // Executa a cada 1 hora
+    @Scheduled(fixedRate = 60000) // Executa a cada 1 minuto
     public void enviarNotificacoesConsultasProximas() {
         LocalDateTime agora = LocalDateTime.now();
-        LocalDateTime umDiaAfront = agora.plusDays(1);
+        LocalDateTime trintaMinutosDepois = agora.plusMinutes(30);
 
-        List<Consulta> consultasProximas = consultaRepository.findByDataHoraBetween(agora, umDiaAfront);
+        // Encontrar consultas que estão agendadas para os próximos 30 minutos
+        List<Consulta> consultasProximas = consultaRepository.findByDataHoraBetween(agora, trintaMinutosDepois);
 
         for (Consulta consulta : consultasProximas) {
-            Notificacao notificacao = new Notificacao();
-            notificacao.setMensagem("Lembrete: Consulta com " + consulta.getMedico() + " às " + consulta.getDataHora().toLocalTime());
-            notificacao.setDataHoraEnvio(agora);
-            notificacaoRepository.save(notificacao);
+            // Verificar se a notificação para essa consulta já foi enviada
+            if (notificacaoRepository.findByConsultaId(consulta.getId()).isEmpty()) {
+                Notificacao notificacao = new Notificacao();
+                notificacao.setMensagem("Lembrete: Consulta com " + consulta.getMedico() + " às " + consulta.getDataHora().toLocalTime());
+                notificacao.setDataHoraEnvio(agora);
+                notificacao.setConsulta(consulta);
+                notificacaoRepository.save(notificacao);
+            }
         }
     }
 }

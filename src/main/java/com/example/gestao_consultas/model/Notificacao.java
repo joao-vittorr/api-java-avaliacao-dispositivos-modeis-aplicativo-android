@@ -4,16 +4,20 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+
 import java.time.LocalDateTime;
 
 @Entity
 public class Notificacao {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String mensagem;
     private LocalDateTime dataHoraEnvio;
+
+    @ManyToOne
+    private Consulta consulta; // Adiciona a referência à Consulta
 
     public Long getId() {
         return id;
@@ -37,5 +41,13 @@ public class Notificacao {
 
     public void setDataHoraEnvio(LocalDateTime dataHoraEnvio) {
         this.dataHoraEnvio = dataHoraEnvio;
+    }
+
+    public Consulta getConsulta() {
+        return consulta;
+    }
+
+    public void setConsulta(Consulta consulta) {
+        this.consulta = consulta;
     }
 }
